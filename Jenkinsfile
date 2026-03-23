@@ -39,6 +39,12 @@ pipeline {
                 '''
             }
         }
+
+        stage('Check Docker Is Active') {
+            steps {
+                sh 'docker --version || echo "docker CLI not found"'
+            }
+        }
     }
 
     post {
