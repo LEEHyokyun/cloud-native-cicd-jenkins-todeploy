@@ -36,5 +36,6 @@ public class User {
         user.updatedAt = user.createdAt;
 
         return user;
+
     }
 }
