@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         GRADLE_OPTS = "-Dorg.gradle.daemon=false"
+        TOMCAT_CONTAINER = "cloud-native-cicd-tomcat"
     }
 
     stages {
@@ -24,17 +25,31 @@ pipeline {
                 sh './gradlew test'
             }
         }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                sh '''
+                # WAR 파일 찾기
+                WAR_FILE=$(ls build/libs/*.war | head -n 1)
+
+                echo "Deploying $WAR_FILE"
+
+                # Tomcat 컨테이너로 복사
+                docker cp $WAR_FILE $TOMCAT_CONTAINER:/usr/local/tomcat/webapps/ROOT.war
+                '''
+            }
+        }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+            archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
         }
         success {
-            echo '[Success] Build Success'
+            echo '[Success] Build & Deploy Success'
         }
         failure {
-            echo '[Failed] Build Failed'
+            echo '[Failed] Build or Deploy Failed'
         }
     }
 }

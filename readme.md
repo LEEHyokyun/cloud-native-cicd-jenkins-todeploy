@@ -24,3 +24,4 @@ Git Push → Webhook → Jenkins Trigger
         → Application Running
 ```
 
+※ build, test stage를 분리하여 진행
